@@ -29,7 +29,7 @@ class frConfig ( wx.Frame ):
         szPn.SetFlexibleDirection( wx.BOTH )
         szPn.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
-        self.stTitle = wx.StaticText( self.pnConfig, wx.ID_ANY, u"Network credentials", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.stTitle = wx.StaticText( self.pnConfig, wx.ID_ANY, u"Network credentials:", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.stTitle.Wrap( -1 )
 
         szPn.Add( self.stTitle, 0, wx.ALL, 5 )
@@ -76,6 +76,15 @@ class frConfig ( wx.Frame ):
         self.txPath.SetMinSize( wx.Size( 300,-1 ) )
 
         szPn.Add( self.txPath, 0, wx.ALL, 5 )
+
+        self.chkCompareFile = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"File to compare", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT )
+        self.chkCompareFile.SetValue(True)
+        szPn.Add( self.chkCompareFile, 0, wx.ALIGN_CENTER|wx.ALIGN_RIGHT|wx.ALL, 5 )
+
+        self.txCompareFile = wx.TextCtrl( self.pnConfig, wx.ID_ANY, u"Small always changing file", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txCompareFile.SetMinSize( wx.Size( 150,-1 ) )
+
+        szPn.Add( self.txCompareFile, 0, wx.ALL, 5 )
 
         self.chkAutomatic = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"Automatic", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.chkAutomatic.SetValue(True)
