@@ -77,6 +77,12 @@ class frSambando ( wx.Frame ):
 
         self.mbSambando.Append( self.mnUpdate, u"File" )
 
+        self.mnAbout = wx.Menu()
+        self.itmLicenses = wx.MenuItem( self.mnAbout, wx.ID_ANY, u"Licenses", wx.EmptyString, wx.ITEM_NORMAL )
+        self.mnAbout.Append( self.itmLicenses )
+
+        self.mbSambando.Append( self.mnAbout, u"About" )
+
         self.SetMenuBar( self.mbSambando )
 
 
@@ -86,6 +92,7 @@ class frSambando ( wx.Frame ):
         self.Bind( wx.EVT_SHOW, self.onShow )
         self.btnUpdate.Bind( wx.EVT_BUTTON, self.onUpdate )
         self.Bind( wx.EVT_MENU, self.onConfig, id = self.itmConfig.GetId() )
+        self.Bind( wx.EVT_MENU, self.onLicenses, id = self.itmLicenses.GetId() )
 
     def __del__( self ):
         pass
@@ -99,4 +106,7 @@ class frSambando ( wx.Frame ):
         event.Skip()
 
     def onConfig( self, event ):
+        event.Skip()
+
+    def onLicenses( self, event ):
         event.Skip()

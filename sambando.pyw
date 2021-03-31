@@ -7,7 +7,7 @@ import re
 import filecmp
 import zipfile
 import psutil
-from forms import Sambando, Config
+from forms import Sambando, Config, Licenses
 
 class Configure(Config.frConfig):
     
@@ -276,6 +276,14 @@ class Update(Sambando.frSambando):
             pass
     
         self.Close()
+
+    def onLicenses(self, event):
+        license = Licenses(self)
+        license.Show()
+        
+class Licenses(Licenses.frLicenses):
+    pass
+        
 
 app = wx.App()
 mainWindow = Update(None)
