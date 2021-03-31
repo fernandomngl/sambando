@@ -122,15 +122,30 @@ class Update(Sambando.frSambando):
         
         share = path[share_start_index:share_end_index]
         folder = path[share_end_index:]
-        folder = folder.rstrip(os.sep)+os.sep #sempre com terminador indicando pasta
+        
+        dirfile = ''
+        if is_dir:
+            folder = folder.rstrip(os.sep)+os.sep #if it is dir ends with folder separator
+        else:
+            folder = folder.rstrip(os.sep)
+            index_sep = folder.rfind(os.sep)
+            if index_sep == -1:
+                dirfile = '%s' % folder
+                folder = ''+os.sep
+            else:
+                dirfile = folder[index_sep+1:]
+                folder = folder.rstrip(dirfile)+os.sep
+                
+            
         conn = SMBConnection(login,password,'enumerator',system_name,domain,use_ntlm_v2=True,
                                  sign_options=SMBConnection.SIGN_WHEN_SUPPORTED,
             is_direct_tcp=True)
         connected = conn.connect(system_name,445)
-        
-        file_comparison = open(compare_file+'_new', 'wb')
-        conn.retrieveFileFromOffset(share, 'versao', file_comparison, 0, -1)
-        file_comparison.close()        
+       
+        if is_compared: 
+            file_comparison = open(compare_file+'_new', 'wb')
+            conn.retrieveFileFromOffset(share, 'versao', file_comparison, 0, -1)
+            file_comparison.close()        
         
         
         def smbtree(smbconn, shareddevice, top, download):
@@ -154,7 +169,7 @@ class Update(Sambando.frSambando):
                         new_conn.close()
                 else:
                     filecount+=1
-                    if download and name.filename != share+'.zip' and is_dir:
+                    if download and name.filename != dirfile and is_dir:
                         self.lbUpdate.Append(top.lstrip(os.sep)+name.filename)
                         self.lbUpdate.SetSelection(self.lbUpdate.GetCount()-1)
                         self.ggUpdate.SetValue(self.ggUpdate.GetValue()+1)
@@ -164,33 +179,35 @@ class Update(Sambando.frSambando):
                         smbconn.retrieveFileFromOffset(shareddevice, top+name.filename, newfile, 0, -1)
                         newfile.close()
                         wx.Yield()
-                    elif not is_dir and download and name.filename == share+'.zip':
+                    elif not is_dir and download and name.filename == dirfile:
                         self.lbUpdate.Append('Downloading '+top.lstrip(os.sep)+name.filename)
                         self.lbUpdate.SetSelection(self.lbUpdate.GetCount()-1)
                         self.ggUpdate.SetValue(self.ggUpdate.GetValue()+1)
                         wx.Yield()
-                        relfilepath = top.lstrip(os.sep)+name.filename
-                        #print(top+name.filename)
+                        relfilepath = name.filename
+                        topname = top+name.filename
+                        #print('topname '+topname)
                         newfile = open(relfilepath, "wb")
-                        smbconn.retrieveFileFromOffset(shareddevice, top+name.filename, newfile, 0, -1)
+                        smbconn.retrieveFileFromOffset(shareddevice, topname, newfile, 0, -1)
                         newfile.close()
-                        self.lbUpdate.Append('Extracting...')
-                        self.ggUpdate.SetValue(self.ggUpdate.GetValue())
-                        wx.Yield()
-                        try:
-                            zip_ref = zipfile.ZipFile(share+'.zip', 'r')
-                            self.ggUpdate.Show()
-                            for filename in zip_ref.namelist():
-                                zip_ref.extract(filename)
-                                next_value = self.ggUpdate.GetValue()+1
-                                self.ggUpdate.SetValue(next_value)
-                                self.lbUpdate.Append(filename)
-                                self.lbUpdate.SetSelection(next_value)
-                                wx.Yield()
-                        except:
-                            self.lbUpdate.Append('ERROR!')
-                        finally:
-                            zip_ref.close()
+                        if dirfile.endswith('.zip'):
+                            self.lbUpdate.Append('Extracting...')
+                            self.ggUpdate.SetValue(self.ggUpdate.GetValue())
+                            wx.Yield()
+                            try:
+                                zip_ref = zipfile.ZipFile(share+'.zip', 'r')
+                                self.ggUpdate.Show()
+                                for filename in zip_ref.namelist():
+                                    zip_ref.extract(filename)
+                                    next_value = self.ggUpdate.GetValue()+1
+                                    self.ggUpdate.SetValue(next_value)
+                                    self.lbUpdate.Append(filename)
+                                    self.lbUpdate.SetSelection(next_value)
+                                    wx.Yield()
+                            except:
+                                self.lbUpdate.Append('ERROR!')
+                            finally:
+                                zip_ref.close()
         
             return filecount
 
