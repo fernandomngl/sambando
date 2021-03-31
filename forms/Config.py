@@ -79,7 +79,7 @@ class frConfig ( wx.Frame ):
 
         self.chkCompareFile = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"File to compare", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT )
         self.chkCompareFile.SetValue(True)
-        szPn.Add( self.chkCompareFile, 0, wx.ALIGN_CENTER|wx.ALIGN_RIGHT|wx.ALL, 5 )
+        szPn.Add( self.chkCompareFile, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
 
         self.txCompareFile = wx.TextCtrl( self.pnConfig, wx.ID_ANY, u"Small always changing file", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.txCompareFile.SetMinSize( wx.Size( 150,-1 ) )

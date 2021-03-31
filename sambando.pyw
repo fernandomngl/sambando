@@ -86,7 +86,7 @@ class Configure(Config.frConfig):
 class Update(Sambando.frSambando):
     def onConfig(self, event):
         configure = Configure(self)
-        configure.show()
+        configure.Show()
 
     def onShow(self, event):
         self.ggUpdate.Hide()
@@ -129,6 +129,8 @@ class Update(Sambando.frSambando):
         connected = conn.connect(system_name,445)
         
         file_comparison = open(compare_file+'_new', 'wb')
+        conn.retrieveFileFromOffset(share, 'versao', file_comparison, 0, -1)
+        file_comparison.close()        
         
         
         def smbtree(smbconn, shareddevice, top, download):
@@ -193,10 +195,10 @@ class Update(Sambando.frSambando):
             return filecount
 
         program_list = {
-            config['DO']['program1'] if config.has_option('DO','program1') else '',
-            config['DO']['program2'] if config.has_option('DO','program2') else '',
-            config['DO']['program3'] if config.has_option('DO','program3') else '',
-            config['DO']['program4'] if config.has_option('DO','program4') else '',        
+            config['DO']['program1'] if config.has_option('DO','program1') else 'noprogram1running',
+            config['DO']['program2'] if config.has_option('DO','program2') else 'noprogram2running',
+            config['DO']['program3'] if config.has_option('DO','program3') else 'noprogram3running',
+            config['DO']['program4'] if config.has_option('DO','program4') else 'noprogram4running',        
         } 
         program_open = True
         while program_open:
@@ -204,6 +206,8 @@ class Update(Sambando.frSambando):
             for p in psutil.process_iter():
                 procinfo = p.as_dict(attrs=['name','pid','username'])
                 for program in program_list:
+                    if program ==  '':
+                        continue
                     if program in procinfo['name'].lower():
                         dlg = wx.MessageBox('Please close '+procinfo['name']+' to update!', 'Process open',wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
                         if dlg == wx.CANCEL :
