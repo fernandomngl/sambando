@@ -131,3 +131,4 @@ dmypy.json
 # Wing IDE Scripts
 Scripts/
 Scripts/python.exe
+pyenv.cfg
