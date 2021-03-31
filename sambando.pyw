@@ -29,6 +29,8 @@ class Configure(Config.frConfig):
             'automatic' : str(self.chkAutomatic.IsChecked()),
             'directory' : str(self.chkDirectory.IsChecked()),
             'compare' : str(self.chkCompareFile.IsChecked()),
+            'lock' : str(self.chkLock.IsChecked()),
+            'extract' : str(self.chkExtract.IsChecked()),
             'file' : self.txCompareFile.GetValue(),
             'program1' : '', #software to run after will be checked from this entries
             'program2' : '',
@@ -57,6 +59,8 @@ class Configure(Config.frConfig):
                 'automatic' : str(self.chkAutomatic.IsChecked()),
                 'directory' : str(self.chkDirectory.IsChecked()),
                 'compare' : str(self.chkCompareFile.IsChecked()),
+                'extract' : str(self.chkExtract.IsChecked()),
+                'lock' : str(self.chkLock.IsChecked()),
                 'file' : self.txCompareFile.GetValue(),
                 'program1' : '', #software to run after will be checked from this entries
                 'program2' : '',
@@ -76,6 +80,8 @@ class Configure(Config.frConfig):
         self.chkAutomatic.SetValue(config.getboolean('DO', 'automatic'))
         self.chkDirectory.SetValue(config.getboolean('DO', 'directory'))
         self.chkCompareFile.SetValue(config.getboolean('DO','compare'))
+        self.chkLock.SetValue(config.getboolean('DO','lock'))
+        self.chkExtract.SetValue(config.getboolean('DO','extract'))
         
         self.txLogin.SetValue(login)
         self.txPassword.SetValue(password)
@@ -102,6 +108,8 @@ class Update(Sambando.frSambando):
         path = config['NETWORK']['path']
         is_dir = config.getboolean('DO', 'directory')
         is_compared = config.getboolean('DO', 'compare')
+        is_extracted = config.getboolean('DO', 'extract')
+        is_locked = config.getboolean('DO', 'lock')
         compare_file = ''
         if is_compared:
             compare_file = config['DO']['file']
@@ -161,7 +169,8 @@ class Update(Sambando.frSambando):
                                     is_direct_tcp=True)
                         new_conn.connect(system_name,445)
                         try:
-                            os.makedirs(new_shareddevice.lstrip(folder[1:]))    
+                            if is_dir:
+                                os.makedirs(new_shareddevice.lstrip(folder[1:]))    
                         except FileExistsError:
                             pass
                         #print(new_shareddevice)
@@ -185,12 +194,12 @@ class Update(Sambando.frSambando):
                         self.ggUpdate.SetValue(self.ggUpdate.GetValue()+1)
                         wx.Yield()
                         relfilepath = name.filename
-                        topname = top+name.filename
+                        topname = top.rstrip(os.sep)+os.sep+name.filename.lstrip(os.sep)
                         #print('topname '+topname)
                         newfile = open(relfilepath, "wb")
                         smbconn.retrieveFileFromOffset(shareddevice, topname, newfile, 0, -1)
                         newfile.close()
-                        if dirfile.endswith('.zip'):
+                        if dirfile.endswith('.zip') and is_extracted:
                             self.lbUpdate.Append('Extracting...')
                             self.ggUpdate.SetValue(self.ggUpdate.GetValue())
                             wx.Yield()
@@ -221,7 +230,7 @@ class Update(Sambando.frSambando):
     
         if( not os.path.isfile(compare_file) or not filecmp.cmp(compare_file+'_new',compare_file)):
             program_open = True
-            while program_open:
+            while is_locked and program_open:
                 program_open = False
                 for p in psutil.process_iter():
                     procinfo = p.as_dict(attrs=['name','pid','username'])
