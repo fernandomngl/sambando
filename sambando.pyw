@@ -7,4 +7,5 @@ import re
 import filecmp
 import zipfile
 import psutil
+from forms import Sambando, Config
 
