@@ -195,26 +195,27 @@ class Update(Sambando.frSambando):
             return filecount
 
         program_list = {
-            config['DO']['program1'] if config.has_option('DO','program1') else 'noprogram1running',
-            config['DO']['program2'] if config.has_option('DO','program2') else 'noprogram2running',
-            config['DO']['program3'] if config.has_option('DO','program3') else 'noprogram3running',
-            config['DO']['program4'] if config.has_option('DO','program4') else 'noprogram4running',        
+            config['DO']['program1'] if config.has_option('DO','program1') else '',
+            config['DO']['program2'] if config.has_option('DO','program2') else '',
+            config['DO']['program3'] if config.has_option('DO','program3') else '',
+            config['DO']['program4'] if config.has_option('DO','program4') else '',        
         } 
-        program_open = True
-        while program_open:
-            program_open = False
-            for p in psutil.process_iter():
-                procinfo = p.as_dict(attrs=['name','pid','username'])
-                for program in program_list:
-                    if program ==  '':
-                        continue
-                    if program in procinfo['name'].lower():
-                        dlg = wx.MessageBox('Please close '+procinfo['name']+' to update!', 'Process open',wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
-                        if dlg == wx.CANCEL :
-                            return
-                        program_open = True
+
     
         if( not os.path.isfile(compare_file) or not filecmp.cmp(compare_file+'_new',compare_file)):
+            program_open = True
+            while program_open:
+                program_open = False
+                for p in psutil.process_iter():
+                    procinfo = p.as_dict(attrs=['name','pid','username'])
+                    for program in program_list:
+                        if program ==  '':
+                            continue
+                        if program in procinfo['name'].lower():
+                            dlg = wx.MessageBox('Please close '+procinfo['name']+' to update!', 'Process open',wx.OK|wx.CANCEL|wx.ICON_EXCLAMATION)
+                            if dlg == wx.CANCEL :
+                                return
+                            program_open = True
             totalcount = smbtree(conn,share,folder, False)
             #print('totalcount'+str(totalcount))
             self.ggUpdate.SetRange(totalcount)
