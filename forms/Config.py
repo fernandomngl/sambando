@@ -17,7 +17,7 @@ import wx.xrc
 class frConfig ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 477,318 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.FRAME_FLOAT_ON_PARENT|wx.FRAME_SHAPED|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 528,350 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.FRAME_FLOAT_ON_PARENT|wx.FRAME_SHAPED|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -78,13 +78,20 @@ class frConfig ( wx.Frame ):
         szPn.Add( self.txPath, 0, wx.ALL, 5 )
 
         self.chkCompareFile = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"File to compare", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT )
-        self.chkCompareFile.SetValue(True)
         szPn.Add( self.chkCompareFile, 0, wx.ALIGN_CENTER|wx.ALL, 5 )
 
-        self.txCompareFile = wx.TextCtrl( self.pnConfig, wx.ID_ANY, u"Small always changing file", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.txCompareFile = wx.TextCtrl( self.pnConfig, wx.ID_ANY, u"small_always_changing_file", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.txCompareFile.SetMinSize( wx.Size( 150,-1 ) )
 
         szPn.Add( self.txCompareFile, 0, wx.ALL, 5 )
+
+        self.chkLock = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"Wait programs closed", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.chkLock.SetValue(True)
+        szPn.Add( self.chkLock, 0, wx.ALL, 5 )
+
+        self.chkExtract = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"Auto extract (if .zip)", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.chkExtract.SetValue(True)
+        szPn.Add( self.chkExtract, 0, wx.ALL, 5 )
 
         self.chkAutomatic = wx.CheckBox( self.pnConfig, wx.ID_ANY, u"Automatic", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.chkAutomatic.SetValue(True)
